@@ -32,8 +32,9 @@ os.makedirs(OUTDIR, exist_ok=True)
 # Parameters
 # --------------------------------------------------------------------------- #
 LAM = 0.49        # step size; step-size condition here is 0 < lambda < 1/2
-K = 200           # number of iterations
-SNAPSHOTS = [2, 10, 50]
+K_MEASURE = 1000  # horizon for the averaged-measure figure
+K_GAP = 200       # horizon for the gap figure
+SNAPSHOTS = [5, 50, 1000]
 MESHES = [8, 1001]  # M=8 for the measure plot, M=1001 for the gap plot
 
 
@@ -89,8 +90,9 @@ def ergodic_average(nu_history):
 def plot_averaged_measure(grid, nu_bar, path):
     fig, ax = plt.subplots(ncols=3, figsize=(8, 3), sharey=True, dpi=128)
     for panel, k in zip(ax, SNAPSHOTS):
-        panel.scatter(grid, nu_bar[k])
-        panel.vlines(grid, ymin=0, ymax=nu_bar[k])
+        # Row k-1 is the average over exactly k predictors.
+        panel.scatter(grid, nu_bar[k - 1])
+        panel.vlines(grid, ymin=0, ymax=nu_bar[k - 1])
         panel.scatter(x=-0.5, y=1, color="C1", label="MFE")
         panel.vlines(x=-0.5, ymin=0, ymax=1, color="C1", ls="--")
         panel.set_title(f"{k} iterations")
@@ -120,15 +122,14 @@ def plot_gaps(grid, nu_bar, lam, path):
 
     fig, ax = plt.subplots(ncols=2, figsize=(7, 3), dpi=128, sharey=True)
     # The two gaps coincide analytically for this example, so both panels
-    # show the same computed curve (labels follow the paper caption:
-    # VI gap on the left, Minty gap on the right).
-    ax[0].plot(gap, label="VI gap")
+    # show the same computed curve. Their placement follows the paper caption.
+    ax[0].plot(gap, label="minty gap")
     ax[0].plot(bound, label="upper bound")
     ax[0].set_yscale("log")
     ax[0].set_xlabel("iteration")
     ax[0].set_ylabel("error")
     ax[0].legend()
-    ax[1].plot(gap, label="Minty gap")
+    ax[1].plot(gap, label="vi gap")
     ax[1].plot(bound, label="upper bound")
     ax[1].set_xlabel("iteration")
     ax[1].legend()
@@ -140,12 +141,15 @@ def plot_gaps(grid, nu_bar, lam, path):
 def main():
     for M in MESHES:
         grid = np.linspace(-1.0, 1.0, M)
-        nu_bar = ergodic_average(run_kl_mirror_prox(grid, LAM, K))
         if M == 8:
+            nu_bar = ergodic_average(
+                run_kl_mirror_prox(grid, LAM, K_MEASURE)
+            )
             plot_averaged_measure(
                 grid, nu_bar, os.path.join(OUTDIR, "arctangent_averaged_nu_8.png")
             )
         else:
+            nu_bar = ergodic_average(run_kl_mirror_prox(grid, LAM, K_GAP))
             plot_gaps(
                 grid, nu_bar, LAM, os.path.join(OUTDIR, "arctangent_vi_gap.png")
             )

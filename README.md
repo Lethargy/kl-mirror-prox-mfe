@@ -9,6 +9,8 @@ Equilibria*.
 Each script implements the finite-dimensional KL Mirror-Prox iteration
 (exponential-tilt prediction and correction steps, both centered at the current
 iterate) on an equispaced mesh, and regenerates the figures for one example.
+The arctangent gap plot uses `M=1001`, and the double-well plots use
+`alpha=0.5` and `lambda=0.24`, matching the manuscript.
 
 ## Contents
 

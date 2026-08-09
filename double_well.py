@@ -85,8 +85,9 @@ def ergodic_average(nu_history):
 def plot_averaged_measure(grid, nu_bar, path):
     fig, ax = plt.subplots(ncols=3, figsize=(8, 3), sharey=True, dpi=128)
     for panel, k in zip(ax, SNAPSHOTS):
-        panel.scatter(grid, nu_bar[k])
-        panel.vlines(grid, ymin=0, ymax=nu_bar[k])
+        # Row k-1 is the average over exactly k predictors.
+        panel.scatter(grid, nu_bar[k - 1])
+        panel.vlines(grid, ymin=0, ymax=nu_bar[k - 1])
         panel.scatter(x=[-1, 1], y=[0.5, 0.5], color="C1", label="MFE")
         panel.vlines(x=[-1, 1], ymin=[0, 0], ymax=[0.5, 0.5], color="C1", ls="--")
         panel.set_title(f"{k} iterations")
