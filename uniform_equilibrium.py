@@ -101,7 +101,7 @@ def main():
         LAM * ALPHA * delta_h**2 / 2.0,
         1.0 - LAM * L_M * D_OMEGA,
     )
-    contraction = 1.0 - gamma_h * m_h_star / 2.0
+    contraction = 1.0 - gamma_h * m_h_star
 
     # Certified entry index: first iterate inside the local reverse-KL region
     # D_KL(mu_h* || mu_{k,h}) <= (m_h*)^2 / 8 from item (3) of the theorem.
